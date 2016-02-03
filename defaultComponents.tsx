@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ast from "markdown-ast/ast";
+import * as ast from "markdownx-ast/ast";
 
 const headerLevels = ["h1", "h2", "h3", "h4", "h5", "h6"];
 

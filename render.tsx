@@ -2,7 +2,7 @@ import * as React from "react";
 
 import {configureDefaultComponents} from "./defaultComponents";
 
-import * as ast from "markdown-ast/ast";
+import * as ast from "markdownx-ast/ast";
 
 
 function UnknownComponent(node: ast.Node) {

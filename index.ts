@@ -1,6 +1,6 @@
 import * as React from "react";
-import {parse as parseMarkdown} from "markdown-ast/parser";
-import * as ast from "markdown-ast/ast";
+import {parse as parseMarkdown} from "markdownx-ast/parser";
+import * as ast from "markdownx-ast/ast";
 
 import {ComponentsMap,configureRender} from "./render";
 
