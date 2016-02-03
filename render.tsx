@@ -1,66 +1,62 @@
 import * as React from "react";
 
-import {parse as parseMarkdown} from "markdown-ast/parser";
-
 import {configureDefaultComponents} from "./defaultComponents";
 
 import * as ast from "markdown-ast/ast";
 
-function Document(props) {
+
+function UnknownComponent(node: ast.Node) {
   return (
-    <article>
-      a markdown document
-    </article>
+    <span>Unknown component: {node.type}</span>
   );
-}
+};
 
 interface RendererOptions {
   components: ComponentsMap,
 }
 
-type ComponentsMap = any;
+export type ComponentsMap = any;
 
-export type RenderFunction = (children: ast.Children) => (JSX.Element | string)[];
+export type RenderChildrenFunction = (children: ast.Children) => (JSX.Element | string)[];
 
-export function parse(src: string): ast.Document {
-  return parseMarkdown(src);
-}
+export function configureRender(components: ComponentsMap = {}) {
+  let defaultComponents = configureDefaultComponents(renderChildren);
+  components = Object.assign({}, defaultComponents, components)
 
-export function configureRender(components: ComponentsMap = {}): RenderFunction {
-
-  let defaultComponents = configureDefaultComponents(render);
-  components = Object.assign({},defaultComponents,components)
-
-  function findComponent(type:string) {
+  function findComponent(node: ast.Node) {
+    let type = node.type;
     let Component = components[type];
 
-    if(Component == null) {
+    if (Component == null) {
       // try uppercase name...
       let upperCaseName = type[0].toUpperCase() + type.slice(1);
       Component = components[upperCaseName];
     }
 
+    if (Component == null) {
+      Component = UnknownComponent
+    }
+
     return Component;
   }
 
-  function render(children: ast.Children) {
+  function render(node: ast.Node) {
+    let Component = findComponent(node);
+    return <Component {...node}/>
+  }
+
+  function renderChildren(children: ast.Children) {
     let i = 0;
     let unique = makeEnsureUnique();
 
     return children.map(node => {
       let key: string;
-      if(typeof node === "string") {
+      if (typeof node === "string") {
         return node;
       } else {
-        let Component = findComponent(node.type);
+        let Component = findComponent(node);
 
-        if(Component == null) {
-          let warning = `Unknown component: ${node.type}`;
-          console.log(warning);
-          return warning;
-        }
-
-        if(ast.isIdNode(node)) {
+        if (ast.isIdNode(node)) {
           key = unique(node.id);
         } else {
           key = unique(i.toString());
@@ -70,7 +66,10 @@ export function configureRender(components: ComponentsMap = {}): RenderFunction 
     })
   }
 
-  return render;
+  return {
+    render,
+    renderChildren,
+  };
 }
 
 export function makeEnsureUnique() {
@@ -96,3 +95,4 @@ export function makeEnsureUnique() {
     return id;
   };
 }
+

@@ -3,15 +3,20 @@ import * as ast from "markdown-ast/ast";
 
 const headerLevels = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
-import {RenderFunction} from "./render";
+import {RenderChildrenFunction} from "./render";
 
-export function configureDefaultComponents(render: RenderFunction) {
+export function configureDefaultComponents(renderChildren: RenderChildrenFunction) {
+  function Document(node: ast.Document) {
+    const {children} = node;
+    return <article>{renderChildren(children)}</article>
+  };
+
   function Section(props: ast.Section) {
     let {id, children} = props;
 
     return (
       <section id={id}>
-        {render(children) }
+        {renderChildren(children) }
       </section>
     );
   };
@@ -31,13 +36,16 @@ export function configureDefaultComponents(render: RenderFunction) {
 
   function Paragraph(node: ast.Paragraph) {
     const {children} = node;
-    return <p>{render(children)}</p>
+    return <p>{renderChildren(children)}</p>
   };
+
+
 
   return {
     Section,
     Heading,
     Paragraph,
+    Document,
   }
 }
 
