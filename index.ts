@@ -1,8 +1,15 @@
 import * as React from "react";
-import {parse as parseMarkdown} from "markdownx-ast/parser";
+import { parse as parseMarkdown } from "markdownx-ast/parser";
 import * as ast from "markdownx-ast/ast";
 
-import {ComponentsMap,configureRender} from "./render";
+import { configureRender} from "./render";
+
+export type Component = React.ComponentClass<any> | React.StatelessComponent<any>;
+
+export type ComponentsMap = { [key: string]: Component };
+
+export type RenderChildrenFunction = (children: ast.Children) => (JSX.Element | string)[];
+
 
 interface RenderToStringOptions {
   mode?: "react" | "pretty"
