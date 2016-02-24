@@ -10,7 +10,6 @@ export type ComponentsMap = { [key: string]: Component };
 
 export type RenderChildrenFunction = (children: ast.Children) => (JSX.Element | string)[];
 
-
 interface RenderToStringOptions {
   mode?: "react" | "pretty"
 }
@@ -28,26 +27,26 @@ function parse(src: string): ast.Document {
 }
 
 export function configure(components: ComponentsMap) {
-  let {render, renderChildren} = configureRender(components);
+  const renderMarkdown = configureRender(components);
 
-  function renderToString(src: string, options: RenderToStringOptions = {}) {
+  // function renderToString(src: string, options: RenderToStringOptions = {}) {
 
-    options = Object.assign({}, { mode: "pretty" }, options);
+  //   options = Object.assign({}, { mode: "pretty" }, options);
 
-    let content = render(parse(src));
-    let html = ReactDOM.renderToString(content);
+  //   let content = render(parse(src));
+  //   let html = ReactDOM.renderToString(content);
 
-    if (options.mode === "pretty") {
-      html = prettyHTML(html);
-    }
+  //   if (options.mode === "pretty") {
+  //     html = prettyHTML(html);
+  //   }
 
-    return html;
-  }
+  //   return html;
+  // }
 
   return {
-    render,
-    renderChildren,
-    renderToString,
+    renderMarkdown,
+    // renderChildren,
+    // renderToString,
     parse,
   }
 }

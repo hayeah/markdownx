@@ -2,8 +2,7 @@ import * as React from "react";
 
 import {
   ComponentsMap,
-  configureDefaultComponents
-} from "./defaultComponents";
+} from "./index";
 
 import * as ast from "markdownx-ast/ast";
 
@@ -11,17 +10,49 @@ interface RendererOptions {
   components: ComponentsMap,
 }
 
-export function configureRender(components: ComponentsMap = {}) {
-  const findComponent = configureDefaultComponents(renderChildren, components);
+import { defaultComponents } from "./components";
 
-  return {
-    render,
-    renderChildren,
-  };
+export function configureRender(customComponents: ComponentsMap = {}) {
+  const components = Object.assign({}, defaultComponents, customComponents);
 
-  function render(node: ast.Node) {
-    const Component: any = findComponent(node);
-    return <Component {...node}/>
+  class RenderContext extends React.Component<any, any> {
+    static childContextTypes = {
+      renderMarkdown: React.PropTypes.func,
+      components: React.PropTypes.object,
+    };
+
+    getChildContext() {
+      return {
+        renderMarkdown,
+        components,
+      }
+    };
+
+    render() {
+      return this.props.children;
+    };
+  }
+
+  return render;
+
+  function render(content: ast.Node | ast.Children) {
+    return (
+      <RenderContext>
+        {renderMarkdown(content)}
+      </RenderContext>
+    );
+  }
+
+  function renderMarkdown(node: ast.Node | ast.Children): any {
+    if(typeof node === "string") {
+      return node;
+    } else if(node.constructor === Array) {
+      return renderChildren(node as ast.Children);
+    } else {
+      const type = (node as ast.Node).type;
+      const Component: any = findComponent(type);
+      return <Component {...node}/>
+    }
   }
 
   function renderChildren(children: ast.Children) {
@@ -33,7 +64,7 @@ export function configureRender(components: ComponentsMap = {}) {
       if (typeof node === "string") {
         return node;
       } else {
-        const Component: any = findComponent(node);
+        const Component: any = findComponent(node.type);
 
         if (ast.isIdNode(node)) {
           key = unique(node.id);
@@ -43,6 +74,10 @@ export function configureRender(components: ComponentsMap = {}) {
         return <Component key={key} {...node}/>
       }
     })
+  }
+
+  function findComponent(type: string) {
+    return components[type] || components["unknown"];
   }
 }
 
