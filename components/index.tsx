@@ -14,15 +14,28 @@ export interface MarkdownContext {
   components: ComponentsMap;
 }
 
+import { Unknown } from "./Unknown";
 import { Document } from "./Document";
 import { Section } from "./Section";
+
+// blocks
 import { Heading } from "./Heading";
 import { Paragraph } from "./Paragraph";
-import { JSX } from "./JSX";
 import { List, ListItem } from "./List";
 import { Code } from "./Code";
-import { Unknown } from "./Unknown";
+import { BlockQuote } from "./BlockQuote";
+
+// html
+import { JSX } from "./JSX";
+import { HTML } from "./HTML";
+
+// inline
 import { Newline } from "./Newline";
+import { Link } from "./Link";
+import { Image } from "./Image";
+import { Strong } from "./Strong";
+import { InlineCode } from "./InlineCode";
+import { Emphasis } from "./Emphasis";
 
 export const defaultComponents: ComponentsMap = {
   document: Document,
@@ -32,7 +45,14 @@ export const defaultComponents: ComponentsMap = {
   list: List,
   "list-item": ListItem,
   jsx: JSX,
+  html: HTML,
   unknown: Unknown,
   code: Code,
   newline: Newline,
+  link: Link,
+  image: Image,
+  strong: Strong,
+  "inline-code": InlineCode,
+  emphasis: Emphasis,
+  blockquote: BlockQuote,
 };

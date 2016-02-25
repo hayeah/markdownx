@@ -8,12 +8,25 @@ import * as io from "nolang/io";
 
 import * as path from "path";
 
+import * as ast from "markdownx-ast/ast";
+
 import { configureMarkdown, CustomComponentProps } from "../index";
 
 const mdx = configureMarkdown({
   CustomContainer,
   CustomComponent,
+  InlineCustomContainer,
 });
+
+function InlineCustomContainer(props: CustomComponentProps) {
+  const { sections, renderMarkdown } = props.content;
+
+  const paragraph = sections[0].children[0] as ast.Paragraph;
+
+  return (
+    <span data-props={JSON.stringify(props)} className="inline-custom-container">{renderMarkdown(paragraph.children)}</span>
+  );
+}
 
 
 function CustomContainer(props: CustomComponentProps) {
@@ -22,12 +35,18 @@ function CustomContainer(props: CustomComponentProps) {
   const content = sections[0].children;
 
   return (
-    <div className="custom-container">{renderMarkdown(content)}</div>
+    <div data-props={JSON.stringify(props)} className="custom-container">
+      {renderMarkdown(content)}
+    </div>
   );
 }
 
-function CustomComponent() {
-  return <div className="custom-component">my custom component</div>;
+function CustomComponent(props) {
+  return (
+    <div data-props={JSON.stringify(props)} className="custom-component">
+      my custom component
+    </div>
+  );
 }
 
 
