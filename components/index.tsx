@@ -22,6 +22,7 @@ import { JSX } from "./JSX";
 import { List, ListItem } from "./List";
 import { Code } from "./Code";
 import { Unknown } from "./Unknown";
+import { Newline } from "./Newline";
 
 export const defaultComponents: ComponentsMap = {
   document: Document,
@@ -33,4 +34,5 @@ export const defaultComponents: ComponentsMap = {
   jsx: JSX,
   unknown: Unknown,
   code: Code,
+  newline: Newline,
 };

@@ -4,7 +4,7 @@ import { contextDef, MarkdownContext } from "./index";
 
 export function Document(node: ast.Document, { renderMarkdown }: MarkdownContext) {
   const { children } = node;
-  return <article>{renderMarkdown(children)}</article>
+  return <article className="markdown">{renderMarkdown(children)}</article>
 };
 
 Object.assign(Document, contextDef);
