@@ -1,5 +1,7 @@
 import * as React from "react";
-import { parse as parseMarkdown } from "markdownx-ast/parser";
+import * as ReactDOM from "react-dom/server";
+
+import { parse } from "markdownx-ast/parser";
 import * as ast from "markdownx-ast/ast";
 
 import { configureRender} from "./render";
@@ -10,45 +12,46 @@ export type ComponentsMap = { [key: string]: Component };
 
 export type RenderChildrenFunction = (children: ast.Children) => (JSX.Element | string)[];
 
-interface RenderToStringOptions {
-  mode?: "react" | "pretty"
+export interface CustomComponentProps {
+  content: {
+    sections: ast.Section[],
+    renderMarkdown: Function,
+  };
 }
 
-const ReactDOM = require("react-dom/server");
+function parseMarkdown(src: string): ast.Document {
+  const sections = parse(src);
 
-import {prettyHTML} from "./formatHTML";
-
-function parse(src: string): ast.Document {
-  let sections = parseMarkdown(src);
   return {
     type: "document",
     children: sections,
   };
 }
 
-export function configure(components: ComponentsMap) {
-  const renderMarkdown = configureRender(components);
+export function configureMarkdown(components: ComponentsMap) {
+  const renderReact = configureRender(components);
 
-  // function renderToString(src: string, options: RenderToStringOptions = {}) {
+  function renderReactMarkup(node: ast.Node) {
+    return ReactDOM.renderToString(renderReact(node));
+  }
 
-  //   options = Object.assign({}, { mode: "pretty" }, options);
+  /*
+  * Render markup string without React checksum.
+  */
+  function renderMarkup(node: ast.Node) {
+    return ReactDOM.renderToStaticMarkup(renderReact(node));
+  }
 
-  //   let content = render(parse(src));
-  //   let html = ReactDOM.renderToString(content);
 
-  //   if (options.mode === "pretty") {
-  //     html = prettyHTML(html);
-  //   }
-
-  //   return html;
-  // }
 
   return {
-    renderMarkdown,
-    // renderChildren,
-    // renderToString,
-    parse,
+    renderMarkup,
+
+    renderReact,
+    renderReactMarkup,
+
+    parse: parseMarkdown,
   }
 }
 
-export default configure;
+export default configureMarkdown;
