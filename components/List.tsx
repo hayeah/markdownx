@@ -14,7 +14,13 @@ Object.assign(List, contextDef);
 
 export function ListItem(node:ast.ListItem, { renderMarkdown }: MarkdownContext) {
   const { children } = node;
-  return <li>{renderMarkdown(children)}</li>;
+
+  let content = renderMarkdown(children);
+  // if(node.isBlock) {
+  //   content = <div>{content}</div>;
+  // }
+
+  return <li>{content}</li>;
 }
 
 Object.assign(ListItem, contextDef);
