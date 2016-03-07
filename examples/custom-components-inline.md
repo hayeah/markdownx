@@ -1,0 +1,1 @@
+An inline custom container <InlineCustomContainer a='1' b="2" c>abcd</InlineCustomContainer>.
